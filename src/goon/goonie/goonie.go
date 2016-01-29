@@ -37,6 +37,7 @@ func transferFilesystem(root string) error {
             }
             
             if fInfo.IsDir() {
+            	consumer.Prepare()
                 nameDotMap[dot.Name] = dot
 			    go func(dot *dp.Dot) {
 			    	consumer.Consume(dot.Id, dot.ParentId, dot.Name, "")
@@ -47,10 +48,13 @@ func transferFilesystem(root string) error {
             if !fInfo.Mode().IsRegular() {
                 return nil
             }
-            
+            consumer.Prepare()
+
 			go func(cleanPath string, dot *dp.Dot) {
 	            byteArrayValue, err := ioutil.ReadFile(cleanPath)
 	            if err != nil {
+	            	// Cleanup and abort..
+	            	consumer.Abort()
 	            	return
 	            }
 	

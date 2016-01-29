@@ -2,8 +2,10 @@ package dpds
 
 type DotConsumer interface {
 	Init()                                    // Initialize the consumer.
+	Prepare() error                           // Prepare for consumption.
 	Consume(params ...interface{}) error      // Consumes dot data.
 	Commit() error                            // Commit all changes.
+	Abort() bool                              // Cleanup and shut down.
 	Finalize() bool                           // Cleanup and shut down.
 }
 
