@@ -29,6 +29,7 @@ func transferFilesystem(root string) error {
             i++
             cleanPath := filepath.Clean(currentPath)
             dir, _ := filepath.Rel(root, filepath.Dir(cleanPath))
+            dir = filepath.ToSlash(dir)
             parent := nameDotMap[dir]
             if parent != nil {
             	dot.ParentId = parent.Id
@@ -38,7 +39,11 @@ func transferFilesystem(root string) error {
             
             if fInfo.IsDir() {
             	consumer.Prepare()
-                nameDotMap[dot.Name] = dot
+            	dirLookup := dot.Name
+            	if dir != "." && dir != ".." {
+            	    dirLookup = dir + "/" + dot.Name
+            	}
+                nameDotMap[dirLookup] = dot
 			    go func(dot *dp.Dot) {
 			    	consumer.Consume(dot.Id, dot.ParentId, dot.Name, "")
 			    } (dot)
